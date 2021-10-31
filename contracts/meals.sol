@@ -56,7 +56,6 @@ abstract contract OnlyExtended {
     
 }
 
-
 abstract contract rERC20 is AccessControl, OnlyExtended {
     IRarity constant rm = IRarity(0xce761D788DF608BD21bdd59d6f4B54b2e27F25Bb);
     uint8 public constant decimals = 18;

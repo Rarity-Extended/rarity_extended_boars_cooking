@@ -1,6 +1,11 @@
-require("@nomiclabs/hardhat-waffle");
-require("@nomiclabs/hardhat-etherscan");
-// require("hardhat-gas-reporter");
+require('@nomiclabs/hardhat-etherscan');
+require('@nomiclabs/hardhat-ethers');
+require('@nomiclabs/hardhat-waffle');
+require("@nomiclabs/hardhat-truffle5");
+require("@nomiclabs/hardhat-ganache");
+require('hardhat-deploy');
+require('hardhat-deploy-ethers');
+require('hardhat-tracer');
 
 let { privateKey, rpc, ftmscanApiKey } = require("./secrets.json");
 
@@ -23,6 +28,7 @@ module.exports = {
     hardhat: {
       forking: {
         url: 'https://rpc.ftm.tools',
+        blockNumber: 20573809,
       }
     },
     localhost: {

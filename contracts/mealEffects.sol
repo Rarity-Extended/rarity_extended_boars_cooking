@@ -5,7 +5,7 @@ import "./interfaces/IRarity.sol";
 import "./interfaces/IrERC20.sol";
 import "./onlyExtended.sol";
 
-contract rarity_extended_boars_cooking is OnlyExtended {
+contract rarity_extended_meals is OnlyExtended {
     string public constant name = "Rarity Extended Boars Cook";
     string public constant symbol = "Cook (1)";
     uint public immutable SUMMMONER_ID;

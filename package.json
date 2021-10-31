@@ -1,14 +1,21 @@
 {
   "name": "hardhat-project",
   "devDependencies": {
-    "@defi-wonderland/smock": "^2.0.5",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@nomiclabs/hardhat-etherscan": "^2.1.6",
+    "@nomiclabs/hardhat-etherscan": "^2.1.7",
+    "@nomiclabs/hardhat-ganache": "^2.0.1",
+    "@nomiclabs/hardhat-truffle5": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/contracts": "^4.3.2",
+    "@defi-wonderland/smock": "^2.0.7",
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.4.7",
-    "hardhat": "^2.6.4",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.6.7",
+    "hardhat-deploy": "^0.9.4",
+    "hardhat-deploy-ethers": "^0.3.0-beta.11",
+    "hardhat-tracer": "^1.0.0-alpha.6",
     "hardhat-gas-reporter": "^1.0.4"
   },
   "dependencies": {
