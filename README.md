@@ -19,6 +19,12 @@ Add some recipes to use the loots from [The Boars adventure](https://github.com/
 - 2x Mushroom + 1x Meat -> Meat and Mushroom Skewer 🍄🥩
 - 2x Mushroom + 1x Meat + 2x Berries -> Gourmet Fruit and Mushroom Mix 🍄🫐🥩
 
+### Associated Contracts 🔀
+- [Rarity Extended Meal - Steamed Mushrooms]()
+- [Rarity Extended Meal - Grilled Mushrooms]()
+- [Rarity Extended Meal - Fruit and Mushroom Mix]()
+- [Rarity Extended Meal - Meat and Mushroom Skewer]()
+- [Rarity Extended Meal - Gourmet Fruit and Mushroom Mix]()
 
 ### Contract Dependencies 📦
 - [Rarity Extended Boars Adventurer](https://ftmscan.com/address/0xcd80cE7E28fC9288e20b806ca53683a439041738)
@@ -28,3 +34,4 @@ Add some recipes to use the loots from [The Boars adventure](https://github.com/
 - [Rarity Extended Loot - Leather](https://ftmscan.com/address/0xc5E80Eef433AF03E9380123C75231A08dC18C4B6)
 - [Rarity Extended Loot - Meat](https://ftmscan.com/address/0x95174B2c7E08986eE44D65252E3323A782429809)
 - [Rarity Extended Loot - Tusks](https://ftmscan.com/address/0x60bFaCc2F96f3EE847cA7D8cC713Ee40114be667)
+- 
