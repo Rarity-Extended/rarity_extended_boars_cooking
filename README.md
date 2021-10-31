@@ -31,7 +31,4 @@ Add some recipes to use the loots from [The Boars adventure](https://github.com/
 - [Rarity Extended Loot - Mushroom](https://ftmscan.com/address/0xcd80cE7E28fC9288e20b806ca53683a439041738)
 - [Rarity Extended Loot - Berries](https://ftmscan.com/address/0x9d6C92CCa7d8936ade0976282B82F921F7C50696)
 - [Rarity Extended Loot - Wood](https://ftmscan.com/address/0xdcE321D1335eAcc510be61c00a46E6CF05d6fAA1)
-- [Rarity Extended Loot - Leather](https://ftmscan.com/address/0xc5E80Eef433AF03E9380123C75231A08dC18C4B6)
 - [Rarity Extended Loot - Meat](https://ftmscan.com/address/0x95174B2c7E08986eE44D65252E3323A782429809)
-- [Rarity Extended Loot - Tusks](https://ftmscan.com/address/0x60bFaCc2F96f3EE847cA7D8cC713Ee40114be667)
-- 
