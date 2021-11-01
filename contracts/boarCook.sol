@@ -8,10 +8,12 @@ import "./onlyExtended.sol";
 contract rarity_extended_boars_cooking is OnlyExtended {
     string public constant name = "Rarity Extended Boars Cook";
     string public constant symbol = "Cook (1)";
+    uint256 public constant GOLD_COST = 4e18;
     uint public immutable SUMMMONER_ID;
     uint public multiplier = 1;
 
     IRarity constant _rm = IRarity(0xce761D788DF608BD21bdd59d6f4B54b2e27F25Bb);
+    IrERC20 constant _gold = IrERC20(0x2069B76Afe6b734Fb65D1d099E7ec64ee9CC76B2);
     IrERC20 constant _mushroom = IrERC20(0xcd80cE7E28fC9288e20b806ca53683a439041738);
     IrERC20 constant _berries = IrERC20(0x9d6C92CCa7d8936ade0976282B82F921F7C50696);
     IrERC20 constant _wood = IrERC20(0xdcE321D1335eAcc510be61c00a46E6CF05d6fAA1);
@@ -47,9 +49,21 @@ contract rarity_extended_boars_cooking is OnlyExtended {
         emit SetMultiplier(_multiplier);
     }
 
+    function approveAll(uint _summoner) external {
+        require(_isApprovedOrOwner(_summoner), "!owner");
+        require(_rm.getApproved(_summoner) == address(this), "!approved");
+        _gold.approve(_summoner, SUMMMONER_ID, type(uint256).max);
+        _mushroom.approve(_summoner, SUMMMONER_ID, type(uint256).max);
+        _berries.approve(_summoner, SUMMMONER_ID, type(uint256).max);
+        _wood.approve(_summoner, SUMMMONER_ID, type(uint256).max);
+        _meat.approve(_summoner, SUMMMONER_ID, type(uint256).max);
+    }
+
     function cook(uint _summoner, uint8 _recipe, uint _receiver) external {
         require(_isApprovedOrOwner(_summoner), "!owner");
         require(_recipe >= 1 && _recipe <= 5, "!recipe");
+        require(_gold.transferFrom(SUMMMONER_ID, _summoner, SUMMMONER_ID, GOLD_COST), "!gold");
+
         if (_recipe == 1) {
             require(_mushroom.transferFrom(SUMMMONER_ID, _summoner, SUMMMONER_ID, 2 * multiplier), "!approval");
             

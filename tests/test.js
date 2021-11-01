@@ -11,7 +11,7 @@ const Gourmet_Fruit_and_Mushroom_Mix = artifacts.require("Gourmet_Fruit_and_Mush
 
 use(solidity);
 
-describe("Tests", function () {
+describe("Tests - Part 1", function () {
 	let rarityExtendedBoarsCook;
     let erc20_Steamed_Mushrooms;
     let erc20_Grilled_Mushrooms;
@@ -22,6 +22,7 @@ describe("Tests", function () {
     let     ADVENTURER = 0;
     let     SUMMMONER_ID = 0;
     const   RARITY_ADDRESS = '0xce761D788DF608BD21bdd59d6f4B54b2e27F25Bb'
+    const   RARITY_GOLD = '0x2069B76Afe6b734Fb65D1d099E7ec64ee9CC76B2';
     const   LOOT_MUSHROOM_ADDR = '0xcd80cE7E28fC9288e20b806ca53683a439041738';
     const   LOOT_BERRIES_ADDR = '0x9d6C92CCa7d8936ade0976282B82F921F7C50696';
     const   LOOT_WOOD_ADDR = '0xdcE321D1335eAcc510be61c00a46E6CF05d6fAA1';
@@ -39,10 +40,12 @@ describe("Tests", function () {
 		ADVENTURER = Number(await RARITY.next_summoner());
 		await (await RARITY.summon(1)).wait();
 
-        await mintERC20(LOOT_MUSHROOM_ADDR, ADVENTURER, 100);
-        await mintERC20(LOOT_BERRIES_ADDR, ADVENTURER, 100);
-        await mintERC20(LOOT_WOOD_ADDR, ADVENTURER, 100);
-        await mintERC20(LOOT_MEAT_ADDR, ADVENTURER, 100);
+        await mintERC20(RARITY_GOLD, ADVENTURER, '80000000000000000000', 2);
+        await mintERC20(LOOT_MUSHROOM_ADDR, ADVENTURER, 40, 8);
+        await mintERC20(LOOT_BERRIES_ADDR, ADVENTURER, 16, 8);
+        await mintERC20(LOOT_WOOD_ADDR, ADVENTURER, 4, 8);
+        await mintERC20(LOOT_MEAT_ADDR, ADVENTURER, 8, 8);
+        await mintERC20(LOOT_MEAT_ADDR, ADVENTURER, 8, 8);
 
         erc20_Steamed_Mushrooms = await Steamed_Mushrooms.new();
         erc20_Grilled_Mushrooms = await Grilled_Mushrooms.new();
@@ -85,11 +88,12 @@ describe("Tests", function () {
 	});
 
 	it('should be possible to approve all the erc20', async function() {
-        const   ERC20ABI = ['function approve(uint from, uint spender, uint amount) external returns (bool)'];
+        const    ERC20ABI = ['function approve(uint from, uint spender, uint amount) external returns (bool)'];
         const    LOOT_MUSHROOM_CONTRACT = new ethers.Contract(LOOT_MUSHROOM_ADDR, ERC20ABI, user);
         const    LOOT_BERRIES_CONTRACT = new ethers.Contract(LOOT_BERRIES_ADDR, ERC20ABI, user);
         const    LOOT_WOOD_CONTRACT = new ethers.Contract(LOOT_WOOD_ADDR, ERC20ABI, user);
         const    LOOT_MEAT_CONTRACT = new ethers.Contract(LOOT_MEAT_ADDR, ERC20ABI, user);
+        const    GOLD_CONTRACT = new ethers.Contract(RARITY_GOLD, ERC20ABI, user);
 
         {
             const   tx = await LOOT_MUSHROOM_CONTRACT.approve(ADVENTURER, SUMMMONER_ID, 100);
@@ -111,9 +115,14 @@ describe("Tests", function () {
             const   receipt = await tx.wait();
             expect(receipt.status).to.be.equal(1);
         }
+        {
+            const   tx = await GOLD_CONTRACT.approve(ADVENTURER, SUMMMONER_ID, '80000000000000000000');
+            const   receipt = await tx.wait();
+            expect(receipt.status).to.be.equal(1);
+        }
 	});
 
-	it('should be possible to cook all the receipt a few times', async function() {
+	it('should be possible to cook all the recipes a few times', async function() {
 		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).not.to.be.reverted;
 		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).not.to.be.reverted;
 		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).not.to.be.reverted;
@@ -134,11 +143,158 @@ describe("Tests", function () {
 		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).not.to.be.reverted;
 		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).not.to.be.reverted;
 		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).not.to.be.reverted;
+	});
+
+	it('balances should be correct', async function() {
+		await	expect(Number(await erc20_Steamed_Mushrooms.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Grilled_Mushrooms.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Fruit_and_Mushroom_Mix.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Meat_and_Mushroom_Skewer.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Gourmet_Fruit_and_Mushroom_Mix.balanceOf(ADVENTURER))).to.be.equal(4);
+	});
+
+    it('balances should be zero for ERC20 Loot & Gold', async function() {
+		await	expect(Number(await balanceOf(LOOT_MUSHROOM_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(LOOT_BERRIES_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(LOOT_WOOD_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(LOOT_MEAT_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(RARITY_GOLD, ADVENTURER))).to.be.equal(0);
+	});
+
+	it('should be possible to cook any recipe', async function() {
+        await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 4, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 5, ADVENTURER)).to.be.reverted;
 	});
 
 });
 
-async function    mintERC20(address, to, amount, slot) {
+describe("Tests - Part 2", function () {
+	let rarityExtendedBoarsCook;
+    let erc20_Steamed_Mushrooms;
+    let erc20_Grilled_Mushrooms;
+    let erc20_Fruit_and_Mushroom_Mix;
+    let erc20_Meat_and_Mushroom_Skewer;
+    let erc20_Gourmet_Fruit_and_Mushroom_Mix;
+
+    let     ADVENTURER = 0;
+    let     SUMMMONER_ID = 0;
+    const   RARITY_ADDRESS = '0xce761D788DF608BD21bdd59d6f4B54b2e27F25Bb'
+    const   RARITY_GOLD = '0x2069B76Afe6b734Fb65D1d099E7ec64ee9CC76B2';
+    const   LOOT_MUSHROOM_ADDR = '0xcd80cE7E28fC9288e20b806ca53683a439041738';
+    const   LOOT_BERRIES_ADDR = '0x9d6C92CCa7d8936ade0976282B82F921F7C50696';
+    const   LOOT_WOOD_ADDR = '0xdcE321D1335eAcc510be61c00a46E6CF05d6fAA1';
+    const   LOOT_MEAT_ADDR = '0x95174B2c7E08986eE44D65252E3323A782429809';
+
+    before(async function () {
+		await deployments.fixture();
+		[user, anotherUser] = await ethers.getSigners();
+
+        const   RARITY = new ethers.Contract(RARITY_ADDRESS, [
+			'function next_summoner() public view returns (uint)',
+			'function summon(uint _class) external',
+			'function setApprovalForAll(address operator, bool _approved) external',
+		], user);
+		ADVENTURER = Number(await RARITY.next_summoner());
+		await (await RARITY.summon(1)).wait();
+
+        await mintERC20(RARITY_GOLD, ADVENTURER, '80000000000000000000', 2);
+        await mintERC20(LOOT_MUSHROOM_ADDR, ADVENTURER, 80, 8);
+        await mintERC20(LOOT_BERRIES_ADDR, ADVENTURER, 32, 8);
+        await mintERC20(LOOT_WOOD_ADDR, ADVENTURER, 8, 8);
+        await mintERC20(LOOT_MEAT_ADDR, ADVENTURER, 16, 8);
+        await mintERC20(LOOT_MEAT_ADDR, ADVENTURER, 16, 8);
+
+        erc20_Steamed_Mushrooms = await Steamed_Mushrooms.new();
+        erc20_Grilled_Mushrooms = await Grilled_Mushrooms.new();
+        erc20_Fruit_and_Mushroom_Mix = await Fruit_and_Mushroom_Mix.new();
+        erc20_Meat_and_Mushroom_Skewer = await Meat_and_Mushroom_Skewer.new();
+        erc20_Gourmet_Fruit_and_Mushroom_Mix = await Gourmet_Fruit_and_Mushroom_Mix.new();
+
+		rarityExtendedBoarsCook = await RarityExtendedBoarsCook.new(
+            erc20_Steamed_Mushrooms.address,
+            erc20_Grilled_Mushrooms.address,
+            erc20_Fruit_and_Mushroom_Mix.address,
+            erc20_Meat_and_Mushroom_Skewer.address,
+            erc20_Gourmet_Fruit_and_Mushroom_Mix.address,
+        )
+        await erc20_Steamed_Mushrooms.setMinter(rarityExtendedBoarsCook.address);
+        await erc20_Grilled_Mushrooms.setMinter(rarityExtendedBoarsCook.address);
+        await erc20_Fruit_and_Mushroom_Mix.setMinter(rarityExtendedBoarsCook.address);
+        await erc20_Meat_and_Mushroom_Skewer.setMinter(rarityExtendedBoarsCook.address);
+        await erc20_Gourmet_Fruit_and_Mushroom_Mix.setMinter(rarityExtendedBoarsCook.address);
+
+        SUMMMONER_ID = Number(await rarityExtendedBoarsCook.SUMMMONER_ID());
+    });
+
+
+	it('should be possible to increase multiplier', async function() {
+		await	expect(rarityExtendedBoarsCook.setMultiplier(2)).not.to.be.reverted;
+	});
+
+	it('should be possible to approve all the erc20', async function() {
+        const   RARITY = new ethers.Contract(RARITY_ADDRESS, [
+			'function approve(address operator, uint adventurer) external',
+		], user);
+        const   tx = await RARITY.approve(rarityExtendedBoarsCook.address, ADVENTURER);
+        const   receipt = await tx.wait();
+        expect(receipt.status).to.be.equal(1);
+
+		await	expect(rarityExtendedBoarsCook.approveAll(ADVENTURER)).not.to.be.reverted;
+	});
+
+	it('should be possible to cook all the recipes a few times', async function() {
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 4, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 5, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 5, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 4, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 4, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 5, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 5, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 4, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).not.to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).not.to.be.reverted;
+	});
+
+	it('balances should be correct', async function() {
+		await	expect(Number(await erc20_Steamed_Mushrooms.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Grilled_Mushrooms.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Fruit_and_Mushroom_Mix.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Meat_and_Mushroom_Skewer.balanceOf(ADVENTURER))).to.be.equal(4);
+		await	expect(Number(await erc20_Gourmet_Fruit_and_Mushroom_Mix.balanceOf(ADVENTURER))).to.be.equal(4);
+	});
+
+    it('balances should be zero for ERC20 Loot & Gold', async function() {
+		await	expect(Number(await balanceOf(LOOT_MUSHROOM_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(LOOT_BERRIES_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(LOOT_WOOD_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(LOOT_MEAT_ADDR, ADVENTURER))).to.be.equal(0);
+		await	expect(Number(await balanceOf(RARITY_GOLD, ADVENTURER))).to.be.equal(0);
+	});
+
+	it('should be possible to cook any recipe', async function() {
+        await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 1, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 2, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 3, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 4, ADVENTURER)).to.be.reverted;
+		await	expect(rarityExtendedBoarsCook.cook(ADVENTURER, 5, ADVENTURER)).to.be.reverted;
+	});
+
+});
+
+async function    mintERC20(address, to, amount, slot = 2) {
     const toBytes32 = (bn) => {
         return ethers.utils.hexlify(ethers.utils.zeroPad(bn.toHexString(), 32));
     };
@@ -147,7 +303,7 @@ async function    mintERC20(address, to, amount, slot) {
         await ethers.provider.send("evm_mine", []); // Just mines to the next block
     };
 
-    const SLOT = 8;
+    const SLOT = slot;
     const index = ethers.utils.solidityKeccak256(
         ["uint", "uint"],
         [to, SLOT]
