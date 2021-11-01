@@ -180,7 +180,6 @@ describe("Tests - Part 2", function () {
     let erc20_Gourmet_Fruit_and_Mushroom_Mix;
 
     let     ADVENTURER = 0;
-    let     SUMMMONER_ID = 0;
     const   RARITY_ADDRESS = '0xce761D788DF608BD21bdd59d6f4B54b2e27F25Bb'
     const   RARITY_GOLD = '0x2069B76Afe6b734Fb65D1d099E7ec64ee9CC76B2';
     const   LOOT_MUSHROOM_ADDR = '0xcd80cE7E28fC9288e20b806ca53683a439041738';
@@ -225,8 +224,6 @@ describe("Tests - Part 2", function () {
         await erc20_Fruit_and_Mushroom_Mix.setMinter(rarityExtendedBoarsCook.address);
         await erc20_Meat_and_Mushroom_Skewer.setMinter(rarityExtendedBoarsCook.address);
         await erc20_Gourmet_Fruit_and_Mushroom_Mix.setMinter(rarityExtendedBoarsCook.address);
-
-        SUMMMONER_ID = Number(await rarityExtendedBoarsCook.SUMMMONER_ID());
     });
 
 
